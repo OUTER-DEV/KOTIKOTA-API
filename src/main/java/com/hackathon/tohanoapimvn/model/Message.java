@@ -1,4 +1,4 @@
 package com.hackathon.tohanoapimvn.model;
 
-public class Comment {
+public class Message {
 }
