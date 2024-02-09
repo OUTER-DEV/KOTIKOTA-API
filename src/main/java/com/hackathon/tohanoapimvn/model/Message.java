@@ -1,28 +1,29 @@
 package com.hackathon.tohanoapimvn.model;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-import java.util.ListResourceBundle;
+import java.time.LocalDate;
+
+
 @Data
 @NoArgsConstructor
 @Entity
-public class Chat {
+public class Message {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "chat", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<User> participants;
+    @OneToOne
+    private User sender;
 
-    @OneToMany(mappedBy = "chat", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<Message> message;
+    @OneToOne
+    private User receiver;
+    private String content;
+    private LocalDate timestamp;
 }
