@@ -30,7 +30,7 @@ public class UserController {
     private final UserMapper userMapper;
 
     @Operation(security = {@SecurityRequirement(name = BEARER_KEY_SECURITY_SCHEME)})
-    @GetMapping("/me")
+    @GetMapping("/whoami")
     public UserDto getCurrentUser(@AuthenticationPrincipal CustomUserDetails currentUser) {
         return userMapper.toDomain(userService.validateAndGetUserByUsername(currentUser.getUsername()));
     }

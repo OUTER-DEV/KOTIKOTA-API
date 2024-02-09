@@ -1,0 +1,476 @@
+
+openapi: 3.0.3
+info:
+  version: '1.0.0'
+  title: Chat API
+  description: API for managing Crowdfunding functionality
+
+paths:
+  /healthcheck:
+    get:
+      tags:
+        - healthCheck
+      summary: Health check of the server
+      description: Check if the server is up or not
+      responses:
+        '200':
+          description: Server is up
+        '503':
+          description: Server is down
+  /Auth/signup:
+    post:
+      tags:
+        - Auth
+      summary: User signup
+      description: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: john_doe
+                name:
+                  type: string
+                  example: John Doe
+                mail:
+                  type: string
+                  format: email
+                  example: john@example.com
+                password:
+                  type: string
+                  format: password
+                  example: mysecretpassword
+      responses:
+        '201':
+          description: User registered successfully
+        '400':
+          description: Bad request
+        '500':
+          description: Server error
+
+  /Auth/signin:
+    post:
+      tags:
+        - Auth
+      summary: User signin
+      description: Authenticate and login user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: john_doe
+                password:
+                  type: string
+                  format: password
+                  example: mysecretpassword
+      responses:
+        '200':
+          description: User authenticated successfully
+        '401':
+          description: Unauthorized
+        '500':
+          description: Server error
+
+  /Projects/launch:
+    post:
+      tags:
+        - Projects
+      summary: Launch a project
+      description: Create and launch a new crowdfunding project
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectLaunchRequest'
+      responses:
+        '201':
+          description: Project launched successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        '400':
+          description: Bad request
+        '500':
+          description: Server error
+
+  /Projects/{projectId}:
+    get:
+      tags:
+        - Projects
+      summary: Get project details
+      description: Retrieve details of a crowdfunding project by its ID
+      parameters:
+        - name: projectId
+          in: path
+          description: ID of the project to retrieve details for
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        '404':
+          description: Project not found
+        '500':
+          description: Server error
+
+  /Projects/{projectId}/contribute:
+    post:
+      tags:
+        - Projects
+      summary: Contribute to a project
+      description: Contribute to a crowdfunding project by making a donation
+      parameters:
+        - name: projectId
+          in: path
+          description: ID of the project to contribute to
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContributionRequest'
+      responses:
+        '200':
+          description: Contribution successful
+        '400':
+          description: Bad request
+        '404':
+          description: Project not found
+        '500':
+          description: Server error
+
+  /Projects/all:
+    get:
+      tags:
+        - Projects
+      summary: See all projects
+      description: Retrieve a list of all crowdfunding projects
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Project'
+        '500':
+          description: Server error
+
+  /chats:
+    get:
+      tags:
+        - Chat
+      summary: Get list of chats
+      description: Retrieve a list of available chats
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  oneOf:
+                    - $ref: '#/components/schemas/ChatWithLastMessage'
+                    - $ref: '#/components/schemas/AnotherChatWithLastMessage'
+        '500':
+          description: Server error
+
+  /chats/{userId}:
+    post:
+      tags:
+        - Chat
+      summary: Open new chat
+      description: Open a new chat with the specified user
+      parameters:
+        - name: userId
+          in: path
+          description: ID of the user to start a chat with
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '201':
+          description: Chat opened successfully
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/Chat'
+                  - $ref: '#/components/schemas/AnotherChat'
+        '400':
+          description: Bad request
+        '404':
+          description: User not found
+        '500':
+          description: Server error
+
+  /chats/search:
+    get:
+      tags:
+        - Chat
+      summary: Search user for chat
+      description: Search for a user to start a chat with
+      parameters:
+        - name: query
+          in: query
+          description: Search query to find a user
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '400':
+          description: Bad request
+        '500':
+          description: Server error
+
+components:
+  schemas:
+    Chat:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        participants:
+          type: array
+          items:
+            type: integer
+          example: [1, 2]
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Message'
+
+    AnotherChat:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 2
+        participants:
+          type: array
+          items:
+            type: integer
+          example: [3, 4]
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Message'
+
+    Message:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        senderId:
+          type: integer
+          example: 1
+        receiverId:
+          type: integer
+          example: 2
+        content:
+          type: string
+          example: Hello, how are you?
+        timestamp:
+          type: string
+          format: date-time
+          example: "2024-02-09T12:34:56Z"
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        username:
+          type: string
+          example: john_doe
+    ChatWithLastMessage:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        participants:
+          type: array
+          items:
+            type: integer
+          example: [1, 2]
+        lastMessage:
+          $ref: '#/components/schemas/Message'
+
+    AnotherChatWithLastMessage:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 2
+        participants:
+          type: array
+          items:
+            type: integer
+          example: [3, 4]
+        lastMessage:
+          $ref: '#/components/schemas/Message'
+
+    UserSignup:
+      type: object
+      properties:
+        username:
+          type: string
+          example: john_doe
+        name:
+          type: string
+          example: John Doe
+        mail:
+          type: string
+          format: email
+          example: john@example.com
+        password:
+          type: string
+          format: password
+          example: mysecretpassword
+
+    UserSignin:
+      type: object
+      properties:
+        username:
+          type: string
+          example: john_doe
+        password:
+          type: string
+          format: password
+          example: mysecretpassword
+
+    Project:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: My Awesome Project
+        description:
+          type: string
+          example: This is a description of my project.
+        category:
+          type: string
+          example: Technology
+          description: The category of the project.
+        ownerId:
+          type: integer
+          example: 123
+          description: The ID of the owner of the project.
+        targetAmount:
+          type: number
+          example: 10000
+          description: The target amount to be raised for the project.
+        balance:
+          type: number
+          example: 7500
+          description: The current balance or amount raised for the project.
+        deadline:
+          type: string
+          format: date-time
+          example: "2024-12-31T23:59:59Z"
+          description: The deadline for the project.
+        percentageAchieved:
+          type: number
+          format: float
+          example: 75.0
+          description: The percentage of the target amount achieved for the project.
+        numberOfContributors:
+          type: integer
+          example: 10
+          description: The number of contributors who have contributed to the project.
+        contributorIds:
+          type: array
+          items:
+            type: integer
+          example: [1, 2, 3]
+          description: The list of IDs of contributors who have contributed to the project.
+
+    ProjectLaunchRequest:
+      type: object
+      required:
+        - title
+        - description
+        - targetAmount
+        - deadline
+      properties:
+        title:
+          type: string
+          example: My Awesome Project
+          description: The title of the project.
+        description:
+          type: string
+          example: This is a description of my project.
+          description: A detailed description of the project.
+        targetAmount:
+          type: number
+          example: 10000
+          description: The target amount to be raised for the project.
+        deadline:
+          type: string
+          format: date-time
+          example: "2024-12-31T23:59:59Z"
+          description: The deadline for the project.
+
+    ContributionRequest:
+      type: object
+      required:
+        - donorId
+        - ownerId
+        - projectId
+        - amount
+      properties:
+        donorId:
+          type: integer
+          example: 1
+          description: The ID of the donor making the contribution.
+        ownerId:
+          type: integer
+          example: 2
+          description: The ID of the owner of the project.
+        projectId:
+          type: integer
+          example: 1
+          description: The ID of the project to contribute to.
+        amount:
+          type: number
+          example: 5000
+          description: The amount of the contribution.
