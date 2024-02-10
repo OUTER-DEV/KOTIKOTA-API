@@ -10,4 +10,5 @@ public class ProjectCreateDto {
   private String deadline;
   private String category;
   private Long ownerId;
+  private String projectLink;
 }

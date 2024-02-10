@@ -21,4 +21,5 @@ public class ProjectDto {
     private int numberOfContributors;
     private  String owner;
     private List<String> contributors;
+    private String projectLink;
 }

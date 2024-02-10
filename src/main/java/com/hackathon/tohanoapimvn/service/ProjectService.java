@@ -47,6 +47,8 @@ public class ProjectService {
     project.setTargetAmount(request.getTargetAmount());
     project.setDeadline(request.getDeadline());
     project.setCategory(request.getCategory());
+    project.setProjectImage(request.getProjectLink());
+    project.setProjectImage(project.getProjectImage());
 
 
     User owner = userRepository.findById(request.getOwnerId())
@@ -109,6 +111,10 @@ public class ProjectService {
     if (request.getCategory() != null) {
       existingProject.setCategory(request.getCategory());
     }
+    if (request.getProjectLink() != null) {
+      existingProject.setCategory(request.getCategory());
+    }
+
 
     // Enregistrer les modifications
     return projectRepository.save(existingProject);

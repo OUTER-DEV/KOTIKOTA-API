@@ -23,6 +23,8 @@ public class ProjectMapper {
                 .category(project.getCategory())
                 .balance(project.getBalance())
                 .deadline(project.getDeadline())
+                .targetAmount(project.getTargetAmount())
+                .projectLink(project.getProjectImage())
                 .percentageAchieved(project.getPercentageAchieved())
                 .numberOfContributors(project.getNumberOfContributors())
                 .owner(project.getOwner().getName())
@@ -38,10 +40,12 @@ public class ProjectMapper {
                 .description(project.getDescription())
                 .category(project.getCategory())
                 .balance(project.getBalance())
+                .targetAmount(project.getTargetAmount())
                 .deadline(project.getDeadline())
                 .percentageAchieved(project.getPercentageAchieved())
                 .numberOfContributors(project.getNumberOfContributors())
                 .owner(project.getOwner().getName())
+                .projectLink(project.getProjectImage())
                 .build();
     }
 

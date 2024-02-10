@@ -28,6 +28,7 @@ public class Project {
   private Long id;
 
   private String title;
+  private String projectImage;
 
   private String description;
 
