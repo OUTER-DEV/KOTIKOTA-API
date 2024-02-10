@@ -5,6 +5,7 @@ import com.hackathon.tohanoapimvn.endpoint.dto.ProjectCreateDto;
 import com.hackathon.tohanoapimvn.endpoint.dto.ProjectDto;
 import com.hackathon.tohanoapimvn.endpoint.dto.ProjectUpdateDto;
 import com.hackathon.tohanoapimvn.endpoint.mapper.ProjectMapper;
+import com.hackathon.tohanoapimvn.model.PredictionExplanation;
 import com.hackathon.tohanoapimvn.model.Project;
 import com.hackathon.tohanoapimvn.model.exception.ProjectNotFoundException;
 import com.hackathon.tohanoapimvn.model.exception.UserNotFoundException;
@@ -81,5 +82,18 @@ public class ProjectController {
     Project updatedProject = projectService.updateProject(projectId, request);
     return ResponseEntity.ok(projectMapper.toDomain(updatedProject) );
   }
+
+  @GetMapping("/{projectId}/predict")
+  public ResponseEntity<PredictionExplanation> predictSuccessProbability(@PathVariable Long projectId) {
+    // Appel du service pour prédire la probabilité de succès du projet
+    double successProbability = projectService.predictSuccessProbability(projectId);
+
+    // Génération de l'explication
+    PredictionExplanation explanation = projectService.generateExplanation(successProbability);
+
+    // Retour de la réponse avec la prédiction et les explications
+    return ResponseEntity.ok(explanation);
+  }
+
 
 }
