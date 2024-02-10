@@ -6,7 +6,7 @@ import lombok.Data;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-@Data
+
 @Builder
 public record UserDto(Long id, String username, String name, String email, String role) {
 }

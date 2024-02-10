@@ -9,4 +9,5 @@ public class ProjectUpdateDto {
   private Double targetAmount;
   private String deadline;
   private String category;
+  private String projectLink;
 }
