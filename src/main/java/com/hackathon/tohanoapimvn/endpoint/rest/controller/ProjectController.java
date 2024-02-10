@@ -2,7 +2,9 @@ package com.hackathon.tohanoapimvn.endpoint.rest.controller;
 
 import com.hackathon.tohanoapimvn.endpoint.dto.ContributionDto;
 import com.hackathon.tohanoapimvn.endpoint.dto.ProjectCreateDto;
+import com.hackathon.tohanoapimvn.endpoint.dto.ProjectDto;
 import com.hackathon.tohanoapimvn.endpoint.dto.ProjectUpdateDto;
+import com.hackathon.tohanoapimvn.endpoint.mapper.ProjectMapper;
 import com.hackathon.tohanoapimvn.model.Project;
 import com.hackathon.tohanoapimvn.model.exception.ProjectNotFoundException;
 import com.hackathon.tohanoapimvn.model.exception.UserNotFoundException;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/Projects")
@@ -31,27 +34,28 @@ public class ProjectController {
 
   private final ProjectService projectService;
   private final NotificationService notificationService;
+  private final ProjectMapper projectMapper;
 
 
   @GetMapping("/all")
-  public List<Project> getAllProjects() {
-    return projectService.getAllProjects();
+  public List<ProjectDto> getAllProjects() {
+    return projectService.getAllProjects().stream().map(projectMapper::toDomain).collect(Collectors.toList());
   }
 
   @GetMapping("/{projectId}")
-  public Project getProjectById(@PathVariable Long projectId) {
+  public ProjectDto getProjectById(@PathVariable Long projectId) {
     Project project = projectService.getProjectById(projectId);
     if (project == null) {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found with id: " + projectId);
     }
-    return project;
+    return projectMapper.toDomain(project);
   }
 
   @PostMapping("/launch")
-  public ResponseEntity<Project> launchProject(@RequestBody ProjectCreateDto request) {
+  public ResponseEntity<ProjectDto> launchProject(@RequestBody ProjectCreateDto request) {
     Project project = projectService.launchProject(request);
 
-    return ResponseEntity.status(HttpStatus.CREATED).body(project);
+    return ResponseEntity.status(HttpStatus.CREATED).body(projectMapper.toDomainWithoutContributors(project));
   }
 
   @PostMapping("/{projectId}/contribute")
@@ -73,9 +77,9 @@ public class ProjectController {
   }
 
   @PutMapping("/{projectId}/update")
-  public ResponseEntity<Project> updateProject(@PathVariable Long projectId, @RequestBody ProjectUpdateDto request) {
+  public ResponseEntity<ProjectDto> updateProject(@PathVariable Long projectId, @RequestBody ProjectUpdateDto request) {
     Project updatedProject = projectService.updateProject(projectId, request);
-    return ResponseEntity.ok(updatedProject);
+    return ResponseEntity.ok(projectMapper.toDomain(updatedProject) );
   }
 
 }
