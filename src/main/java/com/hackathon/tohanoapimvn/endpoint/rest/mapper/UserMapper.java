@@ -9,6 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import com.hackathon.tohanoapimvn.endpoint.dto.UserDto;
+import com.hackathon.tohanoapimvn.model.User;
+import org.springframework.stereotype.Component;
 
 
 @Component
@@ -36,5 +39,15 @@ public class UserMapper {
         user.setRole(WebConfig.USER);
         return user;
     }
-
+    public static UserDto toDto(User user) {
+        return new UserDto(
+          user.getId(),
+          user.getUsername(),
+          user.getName(),
+          user.getEmail(),
+          user.getRole()
+        );
+    }
 }
+
+
